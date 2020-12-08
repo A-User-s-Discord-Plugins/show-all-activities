@@ -1,8 +1,8 @@
-const { Plugin } = require('powercord/entities')
-const { getModule, getModuleByDisplayName, i18n: { Messages }, React } = require('powercord/webpack')
-const { Button, Icon, Tooltip } = require('powercord/components')
-const { findInReactTree } = require('powercord/util')
-const { inject, uninject } = require('powercord/injector')
+const { Plugin } = require('@vizality/entities')
+const { getModule, getModuleByDisplayName, i18n: { Messages }, React } = require('@vizality/webpack')
+const { Button, Icon, Tooltip } = require('@vizality/components')
+const { react: { findInReactTree } } = require('@vizality/util')
+const { patch, unpatch } = require('@vizality/patcher')
 
 const CollapsibleActivity = require('./components/CollapsibleActivity')
 const Settings = require('./components/Settings')
@@ -16,19 +16,19 @@ const filterActivities = (a, i) => {
 }
 
 module.exports = class ShowAllActivities extends Plugin {
-    async startPlugin() {
-        this.loadStylesheet('style.css')
-        powercord.api.settings.registerSettings(this.entityID, {
-            category: this.entityID,
+    async onStart() {
+        this.injectStyles('style.css')
+        vizality.api.settings.registerAddonSettings({
+            id: this.addonId,
             label: 'Show All Activities',
             render: Settings
         })
-        const classes = await getModule(['iconButtonSize'])
-        const { getActivities } = await getModule(['getActivities'])
-        const { getGame } = await getModule(['getGame', 'getGameByName'])
+        const classes = await getModule('iconButtonSize')
+        const { getActivities } = await getModule('getActivities')
+        const { getGame } = await getModule('getGame', 'getGameByName')
         const UserActivity = await getModuleByDisplayName('UserActivity')
 
-        inject('show-all-activities-pre', UserActivity.prototype, 'render', function (args) {
+        patch('show-all-activities-pre', UserActivity.prototype, 'render', function (args) {
             if (this.props.__saa) return args
             const activities = getActivities(this.props.user.id).filter(filterActivities)
             if (!activities || !activities.length) return args
@@ -49,7 +49,7 @@ module.exports = class ShowAllActivities extends Plugin {
         }, true)
 
         const _this = this
-        inject('show-all-activities', UserActivity.prototype, 'render', function (_, res) {
+        patch('show-all-activities', UserActivity.prototype, 'render', function (_, res) {
             if (this.props.__saa || this.state?.activity > 0) {
                 const actions = findInReactTree(res, c => c && c.onOpenConnections)
                 if (actions) {
@@ -104,9 +104,9 @@ module.exports = class ShowAllActivities extends Plugin {
         })
     }
 
-    pluginWillUnload() {
-        powercord.api.settings.unregisterSettings(this.entityID)
-        uninject('show-all-activities-pre')
-        uninject('show-all-activities')
+    onStop() {
+        vizality.api.settings.unregisterSettings(this.addonId)
+        unpatch('show-all-activities-pre')
+        unpatch('show-all-activities')
     }
 }

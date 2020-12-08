@@ -1,19 +1,28 @@
 .allactivities-left {
     margin-right: 8px;
 }
+
 .allactivities-right {
     margin-left: 8px;
 }
+
 .allactivities-margin {
     margin-top: 12px;
 }
+
 .allactivities-margin2 {
     margin-top: 22px;
 }
 
 .allactivities-collapsibleheader {
     cursor: pointer;
+    align-items: center;
 }
+
 .allactivities-collapsibleheader:not(:nth-child(1)) {
     margin-top: 20px;
+}
+
+.allactivities-movetoright{
+    margin-left: auto;
 }

@@ -1,5 +1,5 @@
-const { React, getModuleByDisplayName } = require('powercord/webpack')
-const { Icon } = require('powercord/components')
+const { React, getModuleByDisplayName } = require('@vizality/webpack')
+const { Icon } = require('@vizality/components')
 const UserActivity = getModuleByDisplayName('UserActivity', false)
 
 module.exports = class CollapsibleActivity extends React.PureComponent {
@@ -13,7 +13,7 @@ module.exports = class CollapsibleActivity extends React.PureComponent {
 
         const header = UserActivity.prototype.renderHeader.apply({ props: this.props, activity: this.props.activity })
         if (!Array.isArray(header?.props?.children)) return null
-        header.props.children.push(<Icon name={`ArrowDrop${this.state.opened ? 'Up' : 'Down'}`} style={{ marginLeft: 'auto' }} />)
+        header.props.children.push(<Icon name={`ArrowDrop${this.state.opened ? 'Up' : 'Down'}`} className="allactivities-movetoright" />)
         header.props.onClick = () => this.setState({ opened: !this.state.opened })
         header.props.className += ' allactivities-collapsibleheader'
 

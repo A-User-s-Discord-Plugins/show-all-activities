@@ -1,5 +1,5 @@
-const { React } = require('powercord/webpack')
-const { SwitchItem } = require('powercord/components/settings')
+const { React } = require('@vizality/webpack')
+const { settings: { SwitchItem } } = require('@vizality/components')
 
 module.exports = ({ getSetting, toggleSetting }) => <>
     <SwitchItem
