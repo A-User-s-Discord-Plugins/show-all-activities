@@ -1,6 +1,6 @@
 # show-all-activities
 See every status a user has enabled.
 
-![preview](https://slime-rancher.is-inside.me/RrGepSCZ.gif)
+![preview](https://auser.owns-a-furry.club/2258a46.gif)
 
-![collapsible activities](https://slime-rancher.is-inside.me/ZvPiVy9x.png)
+![collapsible activities](https://auser.owns-a-furry.club/7EAA41D.png)
