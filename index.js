@@ -79,26 +79,21 @@ module.exports = class ShowAllActivities extends Plugin {
                 ` allactivities-margin${this.props.activity.type == 1 && this.props.source == 'Profile Modal' ? '2' : ''}`
                 : ''
 
-            if (this.state.activity != 0) children.unshift(React.createElement(Tooltip, {
-                className: `allactivities-left${marginClass}`,
-                text: Messages.PAGINATION_PREVIOUS
-            }, React.createElement(Button, {
-                className: classes.iconButtonSize,
+            if (this.state.activity != 0) children.unshift(React.createElement(Button, {
+                className: "allactivities-buttons allactivities-left " + classes.iconButtonSize,
                 size: Button.Sizes.MIN,
                 color: Button.Colors.WHITE,
                 look: Button.Looks.OUTLINED,
                 onClick: () => this.setState({ activity: this.state.activity - 1 })
-            }, React.createElement(Icon, { direction: 'LEFT', name: 'Arrow' }))))
-            if (this.state.activity < activities.length - 1) children.push(React.createElement(Tooltip, {
-                className: `allactivities-right${marginClass}`,
-                text: Messages.NEXT
-            }, React.createElement(Button, {
-                className: classes.iconButtonSize,
+            }, React.createElement(Icon, { direction: 'LEFT', name: 'Arrow' })))
+            if (this.state.activity < activities.length - 1) children.push(React.createElement(Button, {
+                className: "allactivities-buttons allactivities-right " + classes.iconButtonSize,
                 size: Button.Sizes.MIN,
                 color: Button.Colors.WHITE,
                 look: Button.Looks.OUTLINED,
+                tooltip: Messages.NEXT,
                 onClick: () => this.setState({ activity: this.state.activity + 1 })
-            }, React.createElement(Icon, { direction: 'RIGHT', name: 'Arrow' }))))
+            }, React.createElement(Icon, { direction: 'RIGHT', name: 'Arrow' })))
 
             return res
         })
