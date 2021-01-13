@@ -16,13 +16,9 @@ const filterActivities = (a, i) => {
 }
 
 module.exports = class ShowAllActivities extends Plugin {
-    async onStart() {
+    async start() {
         this.injectStyles('style.css')
-        vizality.api.settings.registerAddonSettings({
-            id: this.addonId,
-            label: 'Show All Activities',
-            render: Settings
-        })
+        this.registerSettings(Settings)
         const classes = await getModule('iconButtonSize')
         const { getActivities } = await getModule('getActivities')
         const { getGame } = await getModule('getGame', 'getGameByName')
@@ -99,7 +95,7 @@ module.exports = class ShowAllActivities extends Plugin {
         })
     }
 
-    onStop() {
+    stop() {
         vizality.api.settings.unregisterSettings(this.addonId)
         unpatch('show-all-activities-pre')
         unpatch('show-all-activities')
