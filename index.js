@@ -9,10 +9,10 @@ const Settings = require('./components/Settings')
 
 let temp
 const filterActivities = (a, i) => {
-    if (i == 0) temp = []
+    if (i === 0) temp = []
     if (temp.includes(a.application_id || a.name)) return false
     temp.push(a.application_id || a.name)
-    return a.type != 4
+    return a.type !== 4
 }
 
 module.exports = class ShowAllActivities extends Plugin {
@@ -21,8 +21,10 @@ module.exports = class ShowAllActivities extends Plugin {
         this.registerSettings(Settings)
         const classes = await getModule('iconButtonSize')
         const { getActivities } = await getModule('getActivities')
-        const { getGame } = await getModule('getGame', 'getGameByName')
+        const { getGame, getGameByName } = await getModule('getGame', 'getGameByName')
         const UserActivity = await getModuleByDisplayName('UserActivity')
+
+        const _getGame = a => getGame(a.application_id) || getGameByName(a.name)
 
         patch('show-all-activities-pre', UserActivity.prototype, 'render', function (args) {
             if (this.props.__saa) return args
@@ -33,7 +35,7 @@ module.exports = class ShowAllActivities extends Plugin {
                 const activity = activities[this.state.activity]
                 if (!activity) return args
                 this.props.activity = activity
-                this.props.game = getGame(activity.application_id)
+                this.props.game = _getGame(activity)
 
                 // fix for streaming
                 if (this.state.activity > 0 && this.props.streamingGuild) {
@@ -52,6 +54,9 @@ module.exports = class ShowAllActivities extends Plugin {
                     actions.activity = this.props.activity
                     delete actions.applicationStream
                 }
+
+                const icon = findInReactTree(res, c => c && c.className && c.game)
+                if (icon) icon.game = this.props.game
             }
 
             if (this.props.__saa) {
@@ -65,31 +70,32 @@ module.exports = class ShowAllActivities extends Plugin {
             if (collapsible) {
                 const defaultOpened = _this.settings.get('autoOpen')
                 res.props.children = activities.map((a, i) => React.createElement(CollapsibleActivity, {
-                    ...this.props, activity: a, game: getGame(a.application_id), defaultOpened, i
+                    ...this.props, activity: a, game: _getGame(a), defaultOpened, i
                 }))
                 return res
             }
 
             const { children } = res.props.children[1].props
-            const marginClass = this.props.activity.details || this.props.activity.state ?
-                ` allactivities-margin${this.props.activity.type == 1 && this.props.source == 'Profile Modal' ? '2' : ''}`
-                : ''
 
-            if (this.state.activity != 0) children.unshift(React.createElement(Button, {
-                className: "allactivities-buttons allactivities-left " + classes.iconButtonSize,
-                size: Button.Sizes.MIN,
-                color: Button.Colors.WHITE,
-                look: Button.Looks.OUTLINED,
-                onClick: () => this.setState({ activity: this.state.activity - 1 })
-            }, React.createElement(Icon, { direction: 'LEFT', name: 'Arrow' })))
-            if (this.state.activity < activities.length - 1) children.push(React.createElement(Button, {
-                className: "allactivities-buttons allactivities-right " + classes.iconButtonSize,
-                size: Button.Sizes.MIN,
-                color: Button.Colors.WHITE,
-                look: Button.Looks.OUTLINED,
-                tooltip: Messages.NEXT,
-                onClick: () => this.setState({ activity: this.state.activity + 1 })
-            }, React.createElement(Icon, { direction: 'RIGHT', name: 'Arrow' })))
+            if (this.state.activity != 0) children.unshift(<Button
+                className ={"allactivities-buttons allactivities-left " + classes.iconButtonSize}
+                size={Button.Sizes.MIN}
+                color={Button.Colors.WHITE}
+                look={Button.Looks.OUTLINED}
+                onClick={() => this.setState({ activity: this.state.activity - 1 })}
+            >
+                <Icon name='ArrowRight' />
+            </Button>)
+            if (this.state.activity < activities.length - 1) children.push(< Button
+                className={"allactivities-buttons allactivities-right " + classes.iconButtonSize}
+                size={Button.Sizes.MIN}
+                color={Button.Colors.WHITE}
+                look={Button.Looks.OUTLINED}
+                onClick={() => this.setState({ activity: this.state.activity + 1 })
+                }
+            >
+                <Icon name='ArrowRight' />
+            </Button >)
 
             return res
         })
